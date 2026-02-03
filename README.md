@@ -1,2 +1,2 @@
-# 001-todolist
-A project to creating a todo list with HTML, CSS and JavaScript.
+# 001-tictactoe
+A project to creating a tic tac toe with HTML, CSS and JavaScript.
