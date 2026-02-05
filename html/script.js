@@ -1,56 +1,83 @@
 /* View */
-class AppView{
-    state = ["menu","board"];
 
-    BOARD_WIDTH = 3;
-    BOARD_HEIGHT = 3;
-    SIGN_SET = ["o","x"];
-
+/* Main Menu */
+class MenuView{
     constructor()
     {
-        this.displayMenu();
+        console.log("test");
+        this.BOARD_WIDTH = 3;
+        this.BOARD_HEIGHT = 3;
+        this.SIGN_SET = ["o","x"];
+
+        this.render();
     }
 
-    displayMenu(){
-        clear();
+    render(){
+        this.clear();
 
-        const divArea = document.createElement("div")
-        const header = document.createElement("h1");
-        header.textContent = "Tic Tac Toe";
+        this.divArea = document.createElement("div")
+        this.header = document.createElement("h1");
+        this.header.textContent = "Tic Tac Toe";
+ 
+        this.buttonOnePlayer = document.createElement("button");
+        this.buttonOnePlayer.textContent = "One Player";
+        this.buttonOnePlayer.setAttribute("data-mode","oneplayer");
+        console.log("check: "+this.buttonOnePlayer.dataset);
 
-        const buttonOnePlayer = document.createElement("button");
-        buttonOnePlayer.textContent = "One Player";
+        this.buttonTwoPlayer = document.createElement("button");
+        this.buttonTwoPlayer.textContent = "Two Player";
+        this.buttonTwoPlayer.setAttribute("data-mode","twoplayer");
 
-        const buttonTwoPlayer = document.createElement("button");
-        buttonTwoPlayer.textContent = "Two Player";
+        
 
-        document.body.appendChild(divArea);
-        divArea.appendChild(header);
-        //divArea.appendChild(buttonOnePlayer);
-        divArea.appendChild(buttonTwoPlayer);
-    
+        document.body.appendChild(this.divArea);
+        this.divArea.appendChild(this.header);
+        this.divArea.appendChild(this.buttonOnePlayer);
+        this.divArea.appendChild(this.buttonTwoPlayer);
     }
 
-    refreshBoardView()
+    clear(){
+        const body = document.body;
+        body.replaceChildren();
+    }
+
+
+    bindOnePlayer(handler){
+        this.buttonOnePlayer.addEventListener("click", handler);
+        
+    }
+
+    bindTwoPlayer(){
+        
+    }
+}
+
+class BoardView {
+    constructor(width, height){
+        this.BOARD_WIDTH = width;
+        this.BOARD_HEIGHT = height;
+    }
+
+    refresh()
     {
-        clear();
+        this.clear();
 
         const playerText = document.createElement("h2");
+        playerText.textContent = 'Test';
         document.body.appendChild(playerText);
 
-        displayBoard();
+        this.displayBoard();
     }
 
-
     displayBoard(){
-        clear();
+        
         /* Create Board */ 
 
-        for (let x = 0; x < BOARD_WIDTH;x++){
+        for (let x = 0; x < this.BOARD_WIDTH;x++){
             const divRow = document.createElement("div");
             document.body.appendChild(divRow);
 
-            for (let y = 0; y < BOARD_HEIGHT;y++)
+            for (let y = 0; y < this.BOARD_HEIGHT;y++)
             {
                 const button = document.createElement("button");
                 button.style ="width:100px; height:100px"; //TODO: ADD TO CSS
@@ -60,25 +87,27 @@ class AppView{
                 button.addEventListener("click", () => {} )
             }
         }
-        
-
-
     }
 
     clear(){
         const body = document.body;
         body.replaceChildren();
     }
-
-    
 }
+
+
 /* Models */
 
 class Game{
 
-    myPlayer = new Player();
-    myBoard = new Board(BOARD_WIDTH,BOARD_HEIGHT);
-
+    constructor(){
+        this.myPlayer = new Player();
+        this.myBoard = new Board();
+    }
+    
+    get width(){
+        return this.myBoard.width;
+    }
 }
 
 class Player{
@@ -105,18 +134,25 @@ class Player{
 
 class Board {
 
-    width;
+    _width;
+    get width() {
+        return this._width;
+    }
+    set width(value) {
+        this._width = value;
+    }
     height;
     board;
     
-    constructor(width, height){
-        this.width = width;
-        this.height = height;
+    constructor(){
+        this.width = 3;
+        this.height = 3;
         
         
-        this.board = new Array(width);
-        for (const x = 0; x < width; x++){
-            board[x] = new Array(height);
+        this.board = new Array(this.width);
+        console.log(`board: ${this.board}`);
+        for (let x = 0; x < this.width; x++){
+            this.board[x] = new Array(this.height);
         }
     }
 
@@ -132,12 +168,16 @@ class Board {
         }
     }
 
+    getSymbol(x, y){
+        return this.board[x][y];
+    }
+
     checkWin(){
         /* Check rows */
 
         for (const s of SIGN_SET){
             for (let x = 0; x < BOARD_WIDTH; x++){
-                if (board[x][0] === s &&  board[x][1] === s && board[x][2] === s){
+                if (board[x][0] === s && board[x][1] === s && board[x][2] === s){
                     return true;
                 }
             }
@@ -190,38 +230,41 @@ class Board {
 
 }
 
-class Sign{
-    /* sign can be "o" or "x" */
-    sign;
-
-    constructor(sign){
-        this.sign = sign;
-    }
-
-    get sign(){
-        return sign;
-    }
-
-}
-
-
-
 
 /* Controller */
-class AppController{
+class GameController{
 
-    constructor(model, view)
+    constructor()
     {
-        this.model = model;
-        this.view = view;
+        this.game = new Game();
+
+        /* Display */
+        this.menuView = new MenuView();
+        
+
+        /* Event */
+        this.menuView.bindOnePlayer(this.handleOnePlayer);
     }
 
+     handleOnePlayer(){
+        
+        this.boardView = new BoardView(3, 3);
+        this.boardView.refresh();
+     }
+
+     handleClick(){
+        this.game.myBoard.setNought(0,0);
+        this.game.myPlayer.switchPlayer();
+
+        this.boardView.refresh();
+     }
     
+
 }
 
 
 /* App */
 
-document.addEventListener('DOMContentLoaded', () => {
-    const myApp = new AppController(new Board(), new AppView());
-})
+
+
+const myApp = new GameController();
