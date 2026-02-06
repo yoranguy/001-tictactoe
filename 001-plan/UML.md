@@ -26,7 +26,6 @@ classDiagram
 
     namespace Model {
         class Player {
-            -int playerNumber
             -string symbol
             +Player(symbol) 
             +getSymbol(): string
@@ -36,19 +35,22 @@ classDiagram
             -int width
             -int length
             -string[][] myBoard
-            +insertCell(x, y, symbol)
+            +drawSymbol(x, y, symbol)
             +getCell(x, y): string
             +win(): bool
-            +clear()
+            +initialiseBoard()
+            +getWidth() : int
+            +getLength() : int
         }
 
         class Game {
-            -int activePlayer
-            -Player playerOne
-            -Player playerTwo
+            -Player activePlayer
             +Game()
-            +getActivePlayer(): int
+            +getActivePlayer(): Player
+            -switchPlayer()
             +reset()
+            getBoardWidth()
+            getBoardLength()
         }
     }
 
@@ -57,8 +59,6 @@ classDiagram
             +MenuView()
             +render()
             +clear()
-            +showBoard()
-
         }
 
         class BoardView {
